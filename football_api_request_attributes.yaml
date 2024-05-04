@@ -1,9 +1,9 @@
 country:
   url:
     countries
-  attributes:
+  parameters:
     type: list
-    keys:
+    attributes:
       - name
       - code
       - flag
@@ -11,9 +11,9 @@ country:
 league:
   url:
     leagues
-  attributes:
+  parameters:
     type: dict
-    keys:
+    attributes:
       league:
         type: list
         keys:
@@ -29,9 +29,13 @@ league:
 season:
   url:
     leagues
-  attributes:
+  parameters:
     type: dict
-    keys:
+    attributes:
+      league:
+        type: list
+        keys:
+          - id
       seasons:
         type: array
         keys:
@@ -39,7 +43,3 @@ season:
           - start
           - end
           - current
-      league:
-        type: list
-        keys:
-          - id
