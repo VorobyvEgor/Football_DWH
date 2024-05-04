@@ -1,0 +1,9 @@
+docker run -d --name some-postgres_5432 \
+-p 5432:5432 \
+-v "$PWD/my-postgres.conf":/etc/postgresql/postgresql.conf \
+-e POSTGRES_PASSWORD=chelsea \
+-e POSTGRES_DB=apifootball \
+-e POSTGRES_USER=egor \
+postgres
+
+-c 'config_file=/etc/postgresql/postgresql.conf'

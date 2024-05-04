@@ -1,0 +1,6 @@
+api_football_first_load_countries:
+  - name
+  - code
+  - country_flag_url
+  - load_dttm
+  - source_id

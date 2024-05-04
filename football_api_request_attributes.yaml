@@ -1,0 +1,45 @@
+country:
+  url:
+    countries
+  attributes:
+    type: list
+    keys:
+      - name
+      - code
+      - flag
+
+league:
+  url:
+    leagues
+  attributes:
+    type: dict
+    keys:
+      league:
+        type: list
+        keys:
+          - id
+          - name
+          - type
+          - logo
+      country:
+        type: list
+        keys:
+          - name
+
+season:
+  url:
+    leagues
+  attributes:
+    type: dict
+    keys:
+      seasons:
+        type: array
+        keys:
+          - year
+          - start
+          - end
+          - current
+      league:
+        type: list
+        keys:
+          - id
