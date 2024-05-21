@@ -105,18 +105,17 @@ def parse_dict(key_response: str, yaml_dict, data: dict):
     return result_dict
 
 
-def get_list_request_result(table_name: str, yaml_path: str):
-    specification = load_yaml_dict(yaml_path=yaml_path)
+def get_list_request_result(query: str, specification: dict):
 
     headers, url = creds_for_football_api()
 
-    dop_url = specification[table_name]['url']
+    dop_url = specification[query]['url']
 
     request = api_request(headers=headers, url=url, dop_url=dop_url)
 
     result_list = []
     for item in request['response']:
-        result_list.append(parse_attribute(key_response=dop_url, config=specification[table_name]['parameters'], data=item))
+        result_list.append(parse_attribute(key_response=dop_url, config=specification[query]['parameters'], data=item))
 
     return result_list
 
@@ -153,12 +152,17 @@ if __name__ == '__main__':
     # print(type(output['leagues']) == dict)
     # print(type(output['countries']))
 
-    data = get_list_request_result(table_name='season', yaml_path='../football_api_request_attributes.yaml')
+    query_test = 'league'
 
-    print(data[2])
+    yaml_dict = load_yaml_dict('../football_api_request_attributes.yaml')
+
+    table_name = yaml_dict[query_test]['table_name']
+    schema_name = yaml_dict[query_test]['schema_name']
+
+    data = get_list_request_result(query=query_test, specification=yaml_dict)
 
     conn = conn_to_pg()
-    load_to_db(conn=conn, data=data, schema='api_football_first_load', table_name='season_prep')
+    load_to_db(conn=conn, data=data, schema=schema_name, table_name=table_name)
 
     # headers, url = creds_for_football_api()
     #

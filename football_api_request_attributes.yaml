@@ -1,4 +1,8 @@
 country:
+  table_name:
+    countries
+  schema_name:
+    api_football_first_load
   url:
     countries
   parameters:
@@ -9,6 +13,10 @@ country:
       - flag
 
 league:
+  table_name:
+    leagues
+  schema_name:
+    api_football_first_load
   url:
     leagues
   parameters:
@@ -27,6 +35,10 @@ league:
           - name
 
 season:
+  table_name:
+    season_prep
+  schema_name:
+    api_football_first_load
   url:
     leagues
   parameters:
