@@ -138,7 +138,7 @@ def parse_attribute(key_response, config:dict,  data:dict):
             for item in data[key]:
                 for k in attr['keys']:
                     array_dict[f'{k}'] = item[k]
-                array_attr.append(array_dict)
+                array_attr.append(json.dumps(array_dict))
             exploded_dict[f'{key_response}_{key}'] = array_attr
             result_dict.update(exploded_dict)
     return result_dict
@@ -157,8 +157,8 @@ if __name__ == '__main__':
 
     print(data[2])
 
-    # conn = conn_to_pg()
-    # load_to_db(conn=conn, data=data, schema='api_football_first_load', table_name='leagues')
+    conn = conn_to_pg()
+    load_to_db(conn=conn, data=data, schema='api_football_first_load', table_name='season_prep')
 
     # headers, url = creds_for_football_api()
     #
