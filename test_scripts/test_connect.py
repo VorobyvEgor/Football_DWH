@@ -152,7 +152,7 @@ if __name__ == '__main__':
     # print(type(output['leagues']) == dict)
     # print(type(output['countries']))
 
-    query_test = 'league'
+    query_test = 'season'
 
     yaml_dict = load_yaml_dict('../football_api_request_attributes.yaml')
 
@@ -160,6 +160,8 @@ if __name__ == '__main__':
     schema_name = yaml_dict[query_test]['schema_name']
 
     data = get_list_request_result(query=query_test, specification=yaml_dict)
+
+    # print(data[0]['leagues_seasons'])
 
     conn = conn_to_pg()
     load_to_db(conn=conn, data=data, schema=schema_name, table_name=table_name)

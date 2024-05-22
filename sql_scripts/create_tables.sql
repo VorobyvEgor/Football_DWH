@@ -32,16 +32,80 @@ CREATE TABLE api_football_first_load.season_prep
 );
 
 CREATE VIEW api_football_first_load.season_v AS
-WITH cte AS (SELECT league_id, unnest(seasons)::jsonb AS season FROM api_football_first_load.season_prep)
+WITH cte AS (SELECT league_id, unnest(seasons)::jsonb AS season, load_dttm, source_id FROM api_football_first_load.season_prep)
 SELECT
-	row_number() over() AS season_id,
-	league_id,
-	(season -> 'year')::text AS YEAR,
+	md5(concat(league_id::text, (season -> 'year')::text))::uuid AS season_id,
+	(season -> 'year')::text AS year,
 	to_date(replace((season -> 'start')::text, '"', ''), 'yyyy-MM-dd') AS start,
-	to_date(replace((season -> 'end')::text, '"', ''), 'yyyy-MM-dd') AS END,
-	(season -> 'current')::text:: Boolean AS current
+	to_date(replace((season -> 'end')::text, '"', ''), 'yyyy-MM-dd') AS end,
+	(season -> 'current')::text:: Boolean AS current,
+	league_id,
+	load_dttm,
+	source_id
 FROM cte;
 
+CREATE VIEW api_football_first_load.coverage_v AS
+WITH season AS
+(SELECT
+	league_id,
+	(season -> 'year')::text AS year,
+	(season -> 'coverage')::jsonb AS coverage,
+	load_dttm,
+	source_id
+FROM (
+	SELECT
+		league_id,
+		unnest(seasons)::jsonb AS season,
+		load_dttm,
+		source_id
+	FROM api_football_first_load.season_prep))
+SELECT
+	row_number() over() AS coverage_id,
+	(coverage -> 'standings')::boolean AS standings,
+	(coverage -> 'players')::boolean AS players,
+	(coverage -> 'top_scorers')::boolean AS top_scorers,
+	(coverage -> 'top_assists')::boolean AS top_assists,
+	(coverage -> 'top_cards')::boolean AS top_cards,
+	(coverage -> 'injuries')::boolean AS injuries,
+	(coverage -> 'predictions')::boolean AS predictions,
+	(coverage -> 'odds')::boolean AS odds,
+	md5(concat(league_id::text, year))::uuid AS season_id,
+	load_dttm,
+	source_id
+FROM season;
 
-
-
+CREATE VIEW api_football_first_load.fixture_v AS
+WITH coverage AS
+(SELECT
+	league_id,
+	(season -> 'year')::text AS year,
+	(season -> 'coverage')::jsonb AS coverage,
+	load_dttm,
+	source_id
+FROM (
+	SELECT
+		league_id,
+		unnest(seasons)::jsonb AS season,
+		load_dttm,
+		source_id
+	FROM api_football_first_load.season_prep)),
+fixtures AS
+(SELECT
+	league_id,
+	year,
+	(coverage -> 'fixtures') AS fixtures,
+	md5(concat(league_id::text, year))::uuid AS season_id,
+	load_dttm,
+	source_id
+FROM coverage
+)
+SELECT
+	row_number() over() AS fixtures_id,
+	(fixtures -> 'events')::boolean AS events,
+	(fixtures -> 'lineups')::boolean AS lineups,
+	(fixtures -> 'statistics_fixtures')::boolean AS statistics_fixtures,
+	(fixtures -> 'statistics_players')::boolean AS statistics_players,
+	md5(concat(league_id::text, year))::uuid AS season_id,
+	load_dttm,
+	source_id
+FROM fixtures;
