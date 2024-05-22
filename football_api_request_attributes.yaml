@@ -55,3 +55,4 @@ season:
           - start
           - end
           - current
+          - coverage
