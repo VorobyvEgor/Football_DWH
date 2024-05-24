@@ -3,6 +3,12 @@ country:
     countries
   schema_name:
     api_football_first_load
+  table_attributes:
+    - name
+    - code
+    - country_flag_url
+    - load_dttm
+    - source_id
   url:
     countries
   parameters:
@@ -17,6 +23,14 @@ league:
     leagues
   schema_name:
     api_football_first_load
+  table_attributes:
+    - league_id
+    - name
+    - type
+    - logo
+    - country_name
+    - load_dttm
+    - source_id
   url:
     leagues
   parameters:
@@ -39,6 +53,11 @@ season:
     season_prep
   schema_name:
     api_football_first_load
+  table_attributes:
+    - league_id
+    - seasons
+    - load_dttm
+    - source_id
   url:
     leagues
   parameters:
@@ -56,3 +75,37 @@ season:
           - end
           - current
           - coverage
+
+team_info:
+  table_name:
+    team_info
+  schema_name:
+    api_football_first_load
+  table_attributes:
+    - team_id
+    - name
+    - code
+    - country
+    - founded
+    - national
+    - logo
+    - league_id
+    - season_year
+    - load_dttm
+    - source_id
+  url:
+    teams
+  parameters:
+    type: dict
+    attributes:
+      team:
+        type: list
+        keys:
+          - id
+          - name
+          - code
+          - country
+          - founded
+          - national
+          - logo
+
