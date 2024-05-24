@@ -109,3 +109,19 @@ SELECT
 	load_dttm,
 	source_id
 FROM fixtures;
+
+CREATE TABLE api_football_first_load.team_info
+(
+  season_year int4,
+  league_id int4,
+  team_id int4,
+  name text,
+  code text,
+  country text,
+  founded int4,
+  national boolean,
+  logo text,
+  load_dttm timestamp,
+  source_id text,
+  PRIMARY KEY (season_year, league_id, team_id)
+);
