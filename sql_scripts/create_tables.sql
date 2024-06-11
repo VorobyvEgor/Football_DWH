@@ -125,3 +125,18 @@ CREATE TABLE api_football_first_load.team_info
   source_id text,
   PRIMARY KEY (season_year, league_id, team_id)
 );
+
+CREATE TABLE api_football_first_load.team_venue
+(
+  venue_id int4,
+  team_id int4,
+  name text,
+  address text,
+  city text,
+  capacity int4,
+  surface text,
+  image text,
+  load_dttm timestamp,
+  source_id text,
+  PRIMARY KEY (team_id, venue_id)
+);

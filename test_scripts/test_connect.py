@@ -68,6 +68,7 @@ def api_request(headers: dict, url: str, dop_url: str, parameters=None) -> dict:
 
 
 def load_to_db(conn: psycopg2.connect, data: list, schema: str, table_name: str, table_attributes: list,
+               not_null_value=[],
                truncate_flg=True) -> None:
     try:
         with conn:
@@ -75,12 +76,16 @@ def load_to_db(conn: psycopg2.connect, data: list, schema: str, table_name: str,
             if truncate_flg:
                 cursor.execute(f"TRUNCATE TABLE {schema}.{table_name}")
             for value in data:
-                print(f'Load to DB: {value}')
-                cursor.execute(f"""
-                    INSERT INTO {schema}.{table_name} ({", ".join(table_attributes)})
-                    VALUES ({'%s,' * (len(value.values()) + 1)} %s)
-                """, tuple(value.values()) + (datetime.now(), 'API_FOOTBALL'))
-        print("Load SUCCESS")
+                write_condition: bool = True
+                for cond in not_null_value:
+                    write_condition += value[cond] is not None
+                if write_condition != 1:
+                    print(f'Load to DB: {value}')
+                    cursor.execute(f"""
+                        INSERT INTO {schema}.{table_name} ({", ".join(table_attributes)})
+                        VALUES ({'%s,' * (len(value.values()) + 1)} %s)
+                    """, tuple(value.values()) + (datetime.now(), 'API_FOOTBALL'))
+            print("Load SUCCESS")
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
 
@@ -146,7 +151,7 @@ def parse_attribute(key_response, config: dict, data: dict):
 
 
 if __name__ == '__main__':
-    query_test = 'country'
+    query_test = 'team_venue'
 
     yaml_dict = load_yaml_dict('../football_api_request_attributes.yaml')
     #
@@ -154,15 +159,17 @@ if __name__ == '__main__':
     #
     # dop_url = yaml_dict[query_test]['url']
 
-    # conn = conn_to_pg()
-    # with conn:
-    #     season_par = pd.read_sql("select distinct league_id, year from api_football_first_load.season_v", con=conn)
-    #     season_par['par'] = season_par.apply(lambda row: {'league': row['league_id'], 'season': row['year']}, axis=1)
-    #     parameters = season_par['par'].to_list()
+    conn = conn_to_pg()
+    with conn:
+        season_par = pd.read_sql("select distinct league_id, year from api_football_first_load.season_v", con=conn)
+        season_par['par'] = season_par.apply(lambda row: {'league': row['league_id'], 'season': row['year']}, axis=1)
+        parameters = season_par['par'].to_list()
+
+    print(parameters[0])
 
     # for param in parameters[0]:
-    data = get_list_request_result(query=query_test, specification=yaml_dict)
-    # print(data)
+    data = get_list_request_result(query=query_test, specification=yaml_dict, params=parameters[0])
+    print(data)
 
     table_name = yaml_dict[query_test]['table_name']
     schema_name = yaml_dict[query_test]['schema_name']
@@ -170,5 +177,4 @@ if __name__ == '__main__':
 
     conn = conn_to_pg()
     load_to_db(conn=conn, data=data, schema=schema_name, table_name=table_name,
-               table_attributes=table_attributes)
-
+               table_attributes=table_attributes, not_null_value=['venue_id'])
