@@ -108,4 +108,38 @@ team_info:
           - founded
           - national
           - logo
-
+team_venue:
+  table_name:
+    team_venue
+  schema_name:
+    api_football_first_load
+  table_attributes:
+    - team_id
+    - venue_id
+    - name
+    - address
+    - city
+    - capacity
+    - surface
+    - image
+    - load_dttm
+    - source_id
+  url:
+    teams
+  parameters:
+    type: dict
+    attributes:
+      team:
+        type: list
+        keys:
+          - id
+      venue:
+        type: list
+        keys:
+          - id
+          - name
+          - address
+          - city
+          - capacity
+          - surface
+          - image
